@@ -23,16 +23,21 @@ int main (int argc, char* args[]) {
   float omega = velocidade / raio; //velocidade angular (rad/s)
 
   Uint32 ultimo_tempo = SDL_GetTicks();
+  Uint32 inicio = SDL_GetTicks();  //guarda o tempo inicial
 
   while (1) {
     Uint32 tempo_atual = SDL_GetTicks();
     float delta_t = (tempo_atual - ultimo_tempo) / 1000.0f; //em segundos
     ultimo_tempo = tempo_atual;
 
+    if ((tempo_atual - inicio) >= 10000) {
+        break;
+      }
+
     angulo += omega * delta_t;  //atualiza de acordo com tempo real
     if (angulo >= 2 * M_PI) {
         angulo -= 2 * M_PI;
-    }
+      }
  
     SDL_SetRenderDrawColor(ren,0,0,0,255); //cor de fundo preto
     SDL_RenderClear(ren);
@@ -45,9 +50,9 @@ int main (int argc, char* args[]) {
     SDL_RenderPresent(ren);
   
     SDL_Delay(16); //~60FPS
-
-    /* FINALIZACAO */
-    SDL_DestroyRenderer(ren);
-    SDL_DestroyWindow(win);
-    SDL_Quit();
+    }
+  /* FINALIZACAO */
+  SDL_DestroyRenderer(ren);
+  SDL_DestroyWindow(win);
+  SDL_Quit();
 }
