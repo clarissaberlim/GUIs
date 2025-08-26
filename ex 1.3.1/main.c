@@ -30,7 +30,7 @@ int main (int argc, char* args[]) {
     float delta_t = (tempo_atual - ultimo_tempo) / 1000.0f; //em segundos
     ultimo_tempo = tempo_atual;
 
-    if ((tempo_atual - inicio) >= 10000) {
+    if ((tempo_atual - inicio) >= 10000) { //limita o tempo da animação em 10s
         break;
       }
 
