@@ -11,35 +11,20 @@ int main (int argc, char* args[]) {
     SDL_Renderer* ren = SDL_CreateRenderer(win, -1, 0);
 
     /* EXECUÇÃO */
-    SDL_Rect r = { 40,20, 10,10 };
-    SDL_Rect r2 = { 60,50, 10,20 };
-    SDL_Rect r3 = { 20,80, 20,10 };
+    SDL_Rect r = { 40,20, 10,10 };							//teclado
+    SDL_Rect r2 = { 60,50, 10,20 };							//mouse
+    SDL_Rect r3 = { 20,80, 20,10 };							//tempo
     
     SDL_Event evt;
-    int espera = 500;
+    int rodando = 1;
     
-    while (1) {
-        SDL_SetRenderDrawColor(ren, 0xFF,0xFF,0xFF,0x00); //fundo branco
-        SDL_RenderClear(ren);
-
-        SDL_SetRenderDrawColor(ren, 0x00,0x00,0xFF,0x00);
-        SDL_RenderFillRect(ren, &r);
-
-        SDL_SetRenderDrawColor(ren, 0xFF,0x00,0x00,0x00);
-        SDL_RenderFillRect(ren, &r2);
-
-        SDL_SetRenderDrawColor(ren, 0x00,0xFF,0x00,0x00);
-        SDL_RenderFillRect(ren, &r3);
-
-        SDL_RenderPresent(ren);
-        
-        SDL_WaitEvent(&evt);
-        Uint32 antes = SDL_GetTicks();
-        int isevt = SDL_WaitEventTimeout(&evt, espera);
-        
-        if(isevt){
-            espera -= (SDL_GetTicks() - antes);
-            if (evt.type == SDL_QUIT) {
+	Uint32 ultimoTempo = SDL_GetTicks();
+	const Uint32 intervalo = 100;						// move r3 a cada 100ms
+    
+    while (rodando) {
+        while (SDL_PollEvent(&evt)) {
+        	if (evt.type == SDL_QUIT) {
+        	rodando = 0;
             	break;
 			}
             if (evt.type == SDL_KEYDOWN) {
@@ -50,7 +35,7 @@ int main (int argc, char* args[]) {
                     	}
                     	break;
                     case SDLK_DOWN:
-                	    if (r.y + r.h + 5 <= 100) {
+                	    if (r.y + r.h + 5 <= 200) {
                 		    r.y += 5;
                 	    }
                         break;
@@ -60,7 +45,7 @@ int main (int argc, char* args[]) {
                     	}
                         break;
                     case SDLK_RIGHT:
-                        if (r.x + r.w + 5 <= 200) {
+                        if (r.x + r.w + 5 <= 400) {
                 	    r.x += 5;
                 	    }
                         break;
@@ -73,15 +58,34 @@ int main (int argc, char* args[]) {
                 r2.x = mX;
                 r2.y = mY;
             }
-        } else {
-        	espera = 500;
-        	r3.x +=2;
-        	r3.y +=2;
         }
+        
+        Uint32 agora = SDL_GetTicks();
+        if (agora - ultimoTempo > intervalo) {
+        	r3.x += 2;
+        	r3.y += 2;
+        	ultimoTempo = agora;        	
+        }
+        
+        SDL_SetRenderDrawColor(ren, 0xFF,0xFF,0xFF,0x00);	//fundo branco
+        SDL_RenderClear(ren);
+
+        SDL_SetRenderDrawColor(ren, 0x00,0x00,0xFF,0x00);	//azul
+        SDL_RenderFillRect(ren, &r);	
+
+        SDL_SetRenderDrawColor(ren, 0xFF,0x00,0x00,0x00);	//vermelho
+        SDL_RenderFillRect(ren, &r2);
+
+        SDL_SetRenderDrawColor(ren, 0x00,0xFF,0x00,0x00);	//verde
+        SDL_RenderFillRect(ren, &r3);
+
+        SDL_RenderPresent(ren);
 	}       
 
     /* FINALIZACAO */
     SDL_DestroyRenderer(ren);
     SDL_DestroyWindow(win);
     SDL_Quit();
+    
+    return 0;
 }
