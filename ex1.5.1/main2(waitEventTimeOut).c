@@ -15,55 +15,42 @@ int main (int argc, char* args[])
     SDL_Rect r = { 40,20, 10,10 };
     SDL_Rect r2 = { 60,50, 10,20 };
     SDL_Rect r3 = { 20,80, 20,10 };
-    
+   
     SDL_Event evt;
     int espera = 500;
-    
-    while (1) {
-        SDL_SetRenderDrawColor(ren, 0xFF,0xFF,0xFF,0x00); //fundo branco
-        SDL_RenderClear(ren);
-
-        SDL_SetRenderDrawColor(ren, 0x00,0x00,0xFF,0x00);
-        SDL_RenderFillRect(ren, &r);
-
-        SDL_SetRenderDrawColor(ren, 0xFF,0x00,0x00,0x00);
-        SDL_RenderFillRect(ren, &r2);
-
-        SDL_SetRenderDrawColor(ren, 0x00,0xFF,0x00,0x00);
-        SDL_RenderFillRect(ren, &r3);
-
-        SDL_RenderPresent(ren);
-        
-        SDL_WaitEvent(&evt);
+   
+    while (1) {        
         Uint32 antes = SDL_GetTicks();
+        printf(">>> antes %d %d\n", espera, antes);
         int isevt = SDL_WaitEventTimeout(&evt, espera);
-        
+        printf(">>> depois %d\n", SDL_GetTicks());
+       
         if(isevt){
             espera -= (SDL_GetTicks()-antes);
             if (evt.type == SDL_QUIT) {
-            	break;
+            break;
             }
             if (evt.type == SDL_KEYDOWN) {
                 switch (evt.key.keysym.sym) {
                     case SDLK_UP:
                       if (r.y - 5 >= 0) {
-                	      r.y -= 5;
+                     r.y -= 5;
                       }
                     break;
                     case SDLK_DOWN:
-                	    if (r.y + r.h + 5 <= 100) {
-                		    r.y += 5;
-                	    }
+                   if (r.y + r.h + 5 <= 200) {
+                   r.y += 5;
+                   }
                         break;
                     case SDLK_LEFT:
-                	    if (r.x - 5 >= 0) {
-                    		r.x -= 5;
-                    	}
+                   if (r.x - 5 >= 0) {
+                    r.x -= 5;
+                    }
                         break;
                     case SDLK_RIGHT:
-                        if (r.x + r.w + 5 <= 200) {
-                	    r.x += 5;
-                	    }
+                        if (r.x + r.w + 5 <= 400) {
+                   r.x += 5;
+                   }
                         break;
                 }
             }
@@ -79,7 +66,21 @@ int main (int argc, char* args[])
           r3.x +=2;
           r3.y +=2;
       }
-  }       
+     
+        SDL_SetRenderDrawColor(ren, 0xFF,0xFF,0xFF,0x00); //fundo branco
+        SDL_RenderClear(ren);
+
+        SDL_SetRenderDrawColor(ren, 0x00,0x00,0xFF,0x00);
+        SDL_RenderFillRect(ren, &r);
+
+        SDL_SetRenderDrawColor(ren, 0xFF,0x00,0x00,0x00);
+        SDL_RenderFillRect(ren, &r2);
+
+        SDL_SetRenderDrawColor(ren, 0x00,0xFF,0x00,0x00);
+        SDL_RenderFillRect(ren, &r3);
+
+        SDL_RenderPresent(ren);
+  }      
 
     /* FINALIZACAO */
     SDL_DestroyRenderer(ren);
