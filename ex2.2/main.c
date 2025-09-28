@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
                         if (estado == PRESSIONADO || estado == ARRASTANDO) {
                             quadrado = pos_inicial; // volta à posição original
                             estado = INATIVO;
-                            printf("Cancelado com ESC\n");
+                            printf("Cancelado com ESC.\n");
                         }
                     }
                     break;
@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
                         int dy = evt.motion.y - startY;
                         if (dx*dx + dy*dy > DRAG_THRESHOLD*DRAG_THRESHOLD) {
                             estado = ARRASTANDO;
-                            printf("Entrou em ARRASTANDO\n");
+                            printf("Entrou em ARRASTANDO.\n");
                         }
                     }
                     if (estado == ARRASTANDO) {
@@ -97,7 +97,7 @@ int main(int argc, char* argv[]) {
                         if (estado == PRESSIONADO) {
                             printf("Clique detectado!\n");
                         } else if (estado == ARRASTANDO) {
-                            printf("Quadrado solto em nova posição\n");
+                            printf("Quadrado solto em nova posicao\n");
                         }
                         estado = INATIVO;
                     }
