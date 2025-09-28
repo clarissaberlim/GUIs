@@ -2,9 +2,32 @@
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
 
+// Função auxiliar para contagem de tempo
+int AUX_WaitEventTimeout(SDL_Event* evt, Uint32* ms) {
+    if (*ms <= 0) {
+        return 0;
+    }
+
+    Uint32 tempo_antes = SDL_GetTicks();
+    int evento_ocorreu = SDL_WaitEventTimeout(evt, *ms);
+    Uint32 tempo_depois = SDL_GetTicks();
+    Uint32 tempo_decorrido = tempo_depois - tempo_antes;
+
+    if (*ms > tempo_decorrido) {
+        *ms -= tempo_decorrido;
+    } else {
+        *ms = 0;
+    }
+
+    return evento_ocorreu;
+}
+
 int main(int argc, char* args[])
 {
     /* INICIALIZAÇÃO */
+    SDL_Init(SDL_INIT_VIDEO);
+    IMG_Init(IMG_INIT_PNG);
+
     SDL_Window* win = SDL_CreateWindow("Animacao com SpriteSheet",
                                        SDL_WINDOWPOS_UNDEFINED,
                                        SDL_WINDOWPOS_UNDEFINED,
@@ -40,25 +63,33 @@ int main(int argc, char* args[])
     SDL_Event evt;
 
     while (rodando) {
-        SDL_WaitEvent(&evt);
+        // --- intervalo de espera até o próximo frame ---
+        Uint32 tempo_espera = 16; // ~60fps
 
-        switch (evt.type) {
-            case SDL_QUIT:
-                rodando = 0;
-                break;
+        // Usa a função auxiliar
+        int tem_evento = AUX_WaitEventTimeout(&evt, &tempo_espera);
 
-            case SDL_MOUSEBUTTONDOWN:
-                if (evt.button.button == SDL_BUTTON_LEFT) {
-                    direcao *= -1; // inverte direção
-                }
-                break;
+        if (tem_evento) {
+            switch (evt.type) {
+                case SDL_QUIT:
+                    rodando = 0;
+                    break;
 
-            case SDL_WINDOWEVENT:
-                if (evt.window.event == SDL_WINDOWEVENT_EXPOSED) {
-                }
-                break;
+                case SDL_MOUSEBUTTONDOWN:
+                    if (evt.button.button == SDL_BUTTON_LEFT) {
+                        direcao *= -1; // inverte direção
+                    }
+                    break;
+
+                case SDL_WINDOWEVENT:
+                    if (evt.window.event == SDL_WINDOWEVENT_EXPOSED) {
+                        // redesenho forçado
+                    }
+                    break;
+            }
         }
 
+        // --- atualização da lógica ---
         Uint32 agora = SDL_GetTicks();
         float delta = (agora - ultimo_tempo_mov) / 1000.0f; // segundos
         ultimo_tempo_mov = agora;
@@ -77,6 +108,7 @@ int main(int argc, char* args[])
             ultimo_tempo_anim = agora;
         }
 
+        // --- desenho ---
         SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
         SDL_RenderClear(ren);
         SDL_RenderCopy(ren, tex, &src, &dst);
